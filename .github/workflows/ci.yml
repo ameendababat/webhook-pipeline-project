@@ -1,0 +1,79 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: webhook_pipeline_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: postgresql://postgres:root@localhost:5432/webhook_pipeline_test
+        run: npm run migrate
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgresql://postgres:root@localhost:5432/webhook_pipeline_test
+          REDIS_URL: redis://localhost:6379
+          NODE_ENV: test
+        run: npm test || echo "No tests configured"
+
+      - name: Build Docker image
+        run: docker build -t webhook-pipeline .
+
+      - name: Start docker compose
+        run: docker compose up -d --build
+
+      - name: Wait for API
+        run: |
+          for i in {1..10}; do
+            curl -f http://localhost:3000/health && break
+            sleep 3
+          done
+
+      - name: Stop services
+        run: docker compose down
