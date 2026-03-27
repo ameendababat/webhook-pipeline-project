@@ -50,6 +50,13 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
+      - name: Wait for Postgres
+        run: |
+          for i in {1..10}; do
+            pg_isready -h postgres -U postgres && break
+            echo "Waiting for Postgres..."
+            sleep 3
+          done
       - name: Run migrations
         env:
           DATABASE_URL: postgres://postgres:root@postgres:5432/webhook_pipeline_test
