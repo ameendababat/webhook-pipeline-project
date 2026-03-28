@@ -1,17 +1,15 @@
-
-
 const logger = {
-  info: (...args: any[]) => {
+  info: (...args: unknown[]) => {
     console.log(`[INFO] ${new Date().toISOString()}`, ...args);
   },
-  error: (...args: any[]) => {
+  error: (...args: unknown[]) => {
     console.error(`[ERROR] ${new Date().toISOString()}`, ...args);
   },
-  warn: (...args: any[]) => {
+  warn: (...args: unknown[]) => {
     console.warn(`[WARN] ${new Date().toISOString()}`, ...args);
   },
-  debug: (...args: any[]) => {
-    if (process.env.NODE_ENV !== 'production') {
+  debug: (...args: unknown[]) => {
+    if (process.env.NODE_ENV !== "production") {
       console.debug(`[DEBUG] ${new Date().toISOString()}`, ...args);
     }
   },

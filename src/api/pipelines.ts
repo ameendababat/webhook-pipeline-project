@@ -1,10 +1,10 @@
-import { Router, Request, Response } from 'express';
-import { z } from 'zod';
-import { db } from '../database/db';
-import { pipelines, subscribers } from '../database/schema';
-import { eq } from 'drizzle-orm';
-import logger from '../utils/logger';
-import { actionRegistry } from '../actions';
+import { Router, Request, Response } from "express";
+import { z } from "zod";
+import { db } from "../database/db";
+import { pipelines, subscribers } from "../database/schema";
+import { eq } from "drizzle-orm";
+import logger from "../utils/logger";
+import { actionRegistry } from "../actions";
 
 const router = Router();
 
@@ -21,7 +21,7 @@ const updatePipelineSchema = z.object({
 });
 
 // Create pipeline
-router.post('/', async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
     const validation = createPipelineSchema.safeParse(req.body);
     if (!validation.success) {
@@ -36,10 +36,13 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
     // Create pipeline
-    const [pipeline] = await db.insert(pipelines).values({
-      name,
-      action,
-    }).returning();
+    const [pipeline] = await db
+      .insert(pipelines)
+      .values({
+        name,
+        action,
+      })
+      .returning();
 
     // Create subscribers
     if (subscriberUrls.length > 0) {
@@ -47,19 +50,19 @@ router.post('/', async (req: Request, res: Response) => {
         subscriberUrls.map((url) => ({
           pipelineId: pipeline.id,
           url,
-        }))
+        })),
       );
     }
     logger.info(`Pipeline created: ${pipeline.id} - ${name}`);
     res.status(201).json({ ...pipeline, subscribers: subscriberUrls });
   } catch (error) {
-    logger.error('Error creating pipeline:', error);
-    res.status(500).json({ error: 'Failed to create pipeline' });
+    logger.error("Error creating pipeline:", error);
+    res.status(500).json({ error: "Failed to create pipeline" });
   }
 });
 
 // Get all pipelines
-router.get('/', async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const allPipelines = await db.query.pipelines.findMany({
       with: {
@@ -68,19 +71,19 @@ router.get('/', async (req: Request, res: Response) => {
     });
     res.json(allPipelines);
   } catch (error) {
-    logger.error('Error fetching pipelines:', error);
-    res.status(500).json({ error: 'Failed to fetch pipelines' });
+    logger.error("Error fetching pipelines:", error);
+    res.status(500).json({ error: "Failed to fetch pipelines" });
   }
 });
 
 // Get pipeline by ID
-router.get('/:id', async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   try {
     const pipelineId = Number(req.params.id);
 
     if (isNaN(pipelineId)) {
-    return res.status(400).json({ error: "Invalid pipeline id" });
-  }
+      return res.status(400).json({ error: "Invalid pipeline id" });
+    }
 
     const pipeline = await db.query.pipelines.findFirst({
       where: eq(pipelines.id, pipelineId),
@@ -90,24 +93,24 @@ router.get('/:id', async (req: Request, res: Response) => {
     });
 
     if (!pipeline) {
-      return res.status(404).json({ error: 'Pipeline not found' });
+      return res.status(404).json({ error: "Pipeline not found" });
     }
 
     res.json(pipeline);
   } catch (error) {
-    logger.error('Error fetching pipeline:', error);
-    res.status(500).json({ error: 'Failed to fetch pipeline' });
+    logger.error("Error fetching pipeline:", error);
+    res.status(500).json({ error: "Failed to fetch pipeline" });
   }
 });
 
 // Update pipeline
-router.put('/:id', async (req: Request, res: Response) => {
+router.put("/:id", async (req: Request, res: Response) => {
   try {
     const pipelineId = Number(req.params.id);
 
     if (isNaN(pipelineId)) {
-    return res.status(400).json({ error: "Invalid pipeline id" });
-  }
+      return res.status(400).json({ error: "Invalid pipeline id" });
+    }
     const validation = updatePipelineSchema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({ error: validation.error.issues });
@@ -121,25 +124,28 @@ router.put('/:id', async (req: Request, res: Response) => {
     }
 
     // Update pipeline
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (name) updateData.name = name;
     if (action) updateData.action = action;
     updateData.updatedAt = new Date();
 
-    await db.update(pipelines)
+    await db
+      .update(pipelines)
       .set(updateData)
       .where(eq(pipelines.id, pipelineId));
 
     if (subscriberUrls) {
       // Delete existing subscribers
-      await db.delete(subscribers).where(eq(subscribers.pipelineId, pipelineId));
+      await db
+        .delete(subscribers)
+        .where(eq(subscribers.pipelineId, pipelineId));
       // Add new subscribers
       if (subscriberUrls.length > 0) {
         await db.insert(subscribers).values(
           subscriberUrls.map((url) => ({
             pipelineId,
             url,
-          }))
+          })),
         );
       }
     }
@@ -150,26 +156,24 @@ router.put('/:id', async (req: Request, res: Response) => {
       },
     });
     res.json(updatedPipeline);
-
   } catch (error) {
-    logger.error('Error updating pipeline:', error);
-    res.status(500).json({ error: 'Failed to update pipeline' });
+    logger.error("Error updating pipeline:", error);
+    res.status(500).json({ error: "Failed to update pipeline" });
   }
 });
 
 // Delete pipeline
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const pipelineId = Number(req.params.id);
     if (isNaN(pipelineId)) {
-    return res.status(400).json({ error: "Invalid pipeline id" });
-  }
+      return res.status(400).json({ error: "Invalid pipeline id" });
+    }
     await db.delete(pipelines).where(eq(pipelines.id, pipelineId));
     res.status(204).send();
-    
   } catch (error) {
-    logger.error('Error deleting pipeline:', error);
-    res.status(500).json({ error: 'Failed to delete pipeline' });
+    logger.error("Error deleting pipeline:", error);
+    res.status(500).json({ error: "Failed to delete pipeline" });
   }
 });
 

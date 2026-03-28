@@ -74,12 +74,8 @@
           "name": "deliveries_job_id_jobs_id_fk",
           "tableFrom": "deliveries",
           "tableTo": "jobs",
-          "columnsFrom": [
-            "job_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["job_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -159,12 +155,8 @@
           "name": "jobs_pipeline_id_pipelines_id_fk",
           "tableFrom": "jobs",
           "tableTo": "pipelines",
-          "columnsFrom": [
-            "pipeline_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["pipeline_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -256,12 +248,8 @@
           "name": "subscribers_pipeline_id_pipelines_id_fk",
           "tableFrom": "subscribers",
           "tableTo": "pipelines",
-          "columnsFrom": [
-            "pipeline_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["pipeline_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -277,21 +265,12 @@
     "public.delivery_status": {
       "name": "delivery_status",
       "schema": "public",
-      "values": [
-        "pending",
-        "success",
-        "failed"
-      ]
+      "values": ["pending", "success", "failed"]
     },
     "public.job_status": {
       "name": "job_status",
       "schema": "public",
-      "values": [
-        "pending",
-        "processing",
-        "completed",
-        "failed"
-      ]
+      "values": ["pending", "processing", "completed", "failed"]
     }
   },
   "schemas": {},

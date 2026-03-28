@@ -1,16 +1,19 @@
+import { JsonValue } from "../types/common";
 
-
-export const addTimestampAction = async (payload: any): Promise<any> => {
+export const addTimestampAction = async (
+  payload: JsonValue,
+): Promise<JsonValue> => {
   const timestamp = new Date().toISOString();
-  
-  if (typeof payload === 'object' && payload !== null) {
+
+  if (typeof payload === "object" && payload !== null) {
+    const obj = payload as Record<string, unknown>;
     return {
-      ...payload,
+      ...obj,
       processed_at: timestamp,
-      received_at: payload.received_at || timestamp,
+      received_at: obj["received_at"] ?? timestamp,
     };
   }
-  
+
   return {
     original: payload,
     processed_at: timestamp,

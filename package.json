@@ -12,8 +12,10 @@
     "build": "tsc",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
-    "lint": "eslint src --ext .ts",
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "echo \"No tests yet\" && exit 0",
+    "format:write": "prettier --write \"src/**/*.{js,ts,json,css,md}\"",
+    "format:check": "prettier --check \"src/**/*.{js,ts,json,css,md}\"",
+    "lint": "eslint src"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +24,6 @@
     "bullmq": "^5.71.0",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
-    "eslint": "^10.1.0",
     "express": "^5.2.1",
     "ioredis": "^5.10.1",
     "pg": "^8.20.0",
@@ -30,10 +31,15 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
     "drizzle-kit": "^0.31.10",
+    "eslint": "^10.1.0",
+    "globals": "^17.4.0",
+    "prettier": "3.8.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^6.0.2"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.2"
   }
 }
