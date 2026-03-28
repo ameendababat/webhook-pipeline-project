@@ -20,7 +20,7 @@ export const deliverToSubscriber = async (
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Delivery-Attempt": attempt.toString(),
+          "X-Delivery-Attempt": (attempt + 1).toString(),
         },
         body: JSON.stringify(payload),
       });
@@ -34,7 +34,7 @@ export const deliverToSubscriber = async (
         .update(deliveries)
         .set({
           status: "success",
-          attempt,
+          attempt: attempt + 1,
           deliveredAt: new Date(),
           updatedAt: new Date(),
         })
@@ -55,7 +55,7 @@ export const deliverToSubscriber = async (
         .update(deliveries)
         .set({
           status: attempt + 1 >= config.maxRetries ? "failed" : "pending",
-          attempt,
+          attempt: attempt + 1,
           error: errorMessage,
           updatedAt: new Date(),
         })

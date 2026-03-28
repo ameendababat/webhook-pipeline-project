@@ -52,7 +52,7 @@ export const processJob = async (
       })
       .where(eq(jobs.id, jobId));
 
-    // Create delivery records and attempt deliveries
+    // Create delivery records
     for (const subscriber of pipeline.subscribers) {
       const [delivery] = await db
         .insert(deliveries)

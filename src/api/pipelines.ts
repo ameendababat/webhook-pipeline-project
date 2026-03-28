@@ -80,7 +80,6 @@ router.get("/", async (req: Request, res: Response) => {
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const pipelineId = Number(req.params.id);
-
     if (isNaN(pipelineId)) {
       return res.status(400).json({ error: "Invalid pipeline id" });
     }
@@ -107,7 +106,6 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.put("/:id", async (req: Request, res: Response) => {
   try {
     const pipelineId = Number(req.params.id);
-
     if (isNaN(pipelineId)) {
       return res.status(400).json({ error: "Invalid pipeline id" });
     }
@@ -170,7 +168,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid pipeline id" });
     }
     await db.delete(pipelines).where(eq(pipelines.id, pipelineId));
-    res.status(204).send();
+    return res.status(204).json({ massage: "Deleted successfully" });
   } catch (error) {
     logger.error("Error deleting pipeline:", error);
     res.status(500).json({ error: "Failed to delete pipeline" });

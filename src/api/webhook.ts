@@ -49,10 +49,6 @@ router.post("/:pipelineId", async (req: Request, res: Response) => {
       jobId: job.id,
     });
   } catch (error) {
-    //  catch (error) {
-    //   logger.error('Error processing webhook:', error);
-    //   res.status(500).json({ error: 'Failed to process webhook' });
-    // }
     console.error("WEBHOOK ERROR:", error);
     logger.error("Error processing webhook:", error);
 
