@@ -80,7 +80,7 @@ export const deliveries = pgTable("deliveries", {
     .notNull(),
   subscriberUrl: text("subscriber_url").notNull(),
   status: deliveryStatusEnum("status").default("pending").notNull(),
-  attempt: integer("attempt").default(0).notNull(),
+  attempt: integer("attempt").notNull(),
   error: text("error"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
