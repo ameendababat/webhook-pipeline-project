@@ -1,0 +1,1 @@
+ALTER TABLE "deliveries" ALTER COLUMN "attempt" DROP DEFAULT;

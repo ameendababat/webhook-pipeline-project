@@ -38,7 +38,7 @@ export const deliverToSubscriber = async (
           deliveredAt: new Date(),
           updatedAt: new Date(),
         })
-        .where(eq(deliveries.id, deliveryId)); // 000 jobId
+        .where(eq(deliveries.id, deliveryId));
 
       logger.info(`Delivery ${deliveryId} succeeded to ${subscriberUrl}`);
       return true;
@@ -67,13 +67,7 @@ export const deliverToSubscriber = async (
 
   try {
     await retryWithBackoff(
-      async () => {
-        // Get current attempt count
-        const [delivery] = await db
-          .select()
-          .from(deliveries)
-          .where(eq(deliveries.id, deliveryId));
-        const attempt = delivery.attempt;
+      async (attempt) => {
         await attemptDelivery(attempt);
       },
       {
